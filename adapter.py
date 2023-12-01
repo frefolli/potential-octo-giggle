@@ -33,8 +33,8 @@ class Adapter:
         return self.dataframe
 
     def split(self, target: str) -> tuple:
-        Xs = self.skip(['class']).with_categoricals().only_numericals().ok()
-        Y = self.only(['class']).ok()
+        Xs = self.skip([target]).with_categoricals().only_numericals().ok()
+        Y = self.only([target]).with_categoricals().only_numericals().ok()
         X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(Xs, Y, test_size=0.3, random_state=42)
         trainset = {'x': X_train, 'y': y_train}
         testset = {'x': X_test, 'y': y_test}
