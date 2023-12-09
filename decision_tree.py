@@ -24,4 +24,4 @@ class DecisionTree(model.Model):
         plt.plot()
 
     def dump(self, path: str) -> None:
-        pass
+        raise Exception("not implemented")
