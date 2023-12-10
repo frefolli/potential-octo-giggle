@@ -4,25 +4,24 @@ import matplotlib.pyplot as plt
 import model
 import abc
 import numpy
+import enum
+
+class Probability(enum.Enum):
+    Multinomial = sklearn.naive_bayes.MultinomialNB
+    Gaussian = sklearn.naive_bayes.GaussianNB
+    Categorical = sklearn.naive_bayes.CategoricalNB
+    Bernoulli = sklearn.naive_bayes.BernoulliNB
+    Complement = sklearn.naive_bayes.ComplementNB
 
 class NaiveBayes(model.Model):
     @staticmethod
-    def type_str_to_klass(type: str) -> abc.ABCMeta:
-        if type == "multinomial":
-            return sklearn.naive_bayes.MultinomialNB
-        elif type == "gaussian":
-            return sklearn.naive_bayes.GaussianNB
-        elif type == "categorical":
-            return sklearn.naive_bayes.CategoricalNB
-        elif type == "bernoulli":
-            return sklearn.naive_bayes.BernoulliNB
-        elif type == "complement":
-            return sklearn.naive_bayes.ComplementNB
-        else:
-            raise Exception("invalid Naive Bayes type str: '%s'" % type)
+    def read_probability(prob: Probability) -> abc.ABCMeta:
+        if not isinstance(prob, Probability):
+            raise Exception("undefined probability type: '%s'" % prob)
+        return prob.value
     
-    def __init__(self, type: str) -> None:
-        self.model = NaiveBayes.type_str_to_klass(type)()
+    def __init__(self, prob: Probability) -> None:
+        self.model = NaiveBayes.read_probability(prob)()
 
     def fit(self, trainset: dict) -> None:
         self.model.fit(trainset['x'], numpy.ravel(trainset['y']))

@@ -5,6 +5,19 @@ import keras.utils
 import matplotlib.pyplot as plt
 import model
 import numpy
+import enum
+
+class Optimizer(enum.Enum):
+    Adadelta = "adadelta"
+    Adagrad = "adagrad"
+    Adam = "adam"
+    Adamax = "adamax"
+    Nadam = "nadam"
+    RMSprop = "rmsprop"
+    SGD = "sgd"
+    Ftrl = "ftrl"
+    LossScaleOptimizer = "lossscaleoptimizerv1"
+    LossScaleOptimizerV3 = "lossscaleoptimizerv3"
 
 class NeuralNetwork(model.Model):
     def __init__(self,
@@ -15,7 +28,7 @@ class NeuralNetwork(model.Model):
                  network_activation: str = 'tanh',
                  output_activation: str = 'tanh',
                  loss: str = 'binary_crossentropy',
-                 optimizer: str = 'adam',
+                 optimizer: Optimizer = Optimizer.Adam,
                  metrics: list[str] = ['accuracy']) -> None:
         self.input_shape: list[int] = input_shape
         self.network_shape: list[int] = network_shape
@@ -31,7 +44,7 @@ class NeuralNetwork(model.Model):
         for layer in network_shape[1:]:
             self.model.add(keras.layers.Dense(layer, activation=network_activation))
         self.model.add(keras.layers.Dense(output_shape[0], activation=output_activation))
-        self.model.compile(loss=loss, optimizer=optimizer, metrics=metrics)
+        self.model.compile(loss=loss, optimizer=optimizer.value, metrics=metrics)
 
     def fit(self, trainset: dict) -> None:
         self.model.fit(trainset['x'], trainset['y'], epochs=10, batch_size=5, verbose=1)
